@@ -6,6 +6,7 @@ import {
   PAGE_SIZE,
   SECOND_ITEMS,
   SORT,
+  TOTAL,
   buildError,
   buildFirstPage,
   buildLastPage,
@@ -63,5 +64,49 @@ describe('usePagedList', () => {
     expect(fetchPage).toHaveBeenLastCalledWith({ page: 0, size: PAGE_SIZE, sort: SORT })
     expect(list.error.value).toBeNull()
     expect(list.items.value).toEqual(FIRST_ITEMS)
+  })
+})
+
+describe('usePagedList reset', () => {
+  it('exposes the total element count of the last loaded page', async () => {
+    const fetchPage = vi.fn().mockResolvedValue(buildFirstPage())
+    const { total, loadMore } = usePagedList(fetchPage, LIST_OPTIONS)
+
+    await loadMore()
+
+    expect(total.value).toBe(TOTAL)
+  })
+
+  it('empties the list and starts again from the first page', async () => {
+    const fetchPage = vi.fn().mockResolvedValueOnce(buildLastPage()).mockResolvedValueOnce(buildFirstPage())
+    const { items, total, hasMore, loadMore, reset } = usePagedList(fetchPage, LIST_OPTIONS)
+    await loadMore()
+
+    reset()
+    expect(items.value).toEqual([])
+    expect(total.value).toBeNull()
+    expect(hasMore.value).toBe(true)
+
+    await loadMore()
+    expect(fetchPage).toHaveBeenLastCalledWith({ page: 0, size: PAGE_SIZE, sort: SORT })
+    expect(items.value).toEqual(FIRST_ITEMS)
+  })
+
+  it('discards a page that arrives after reset', async () => {
+    let resolveStale
+    const fetchPage = vi
+      .fn()
+      .mockReturnValueOnce(new Promise((resolve) => (resolveStale = resolve)))
+      .mockResolvedValueOnce(buildFirstPage())
+    const { items, loading, loadMore, reset } = usePagedList(fetchPage, LIST_OPTIONS)
+
+    const stale = loadMore()
+    reset()
+    await loadMore()
+    resolveStale(buildLastPage())
+    await stale
+
+    expect(items.value).toEqual(FIRST_ITEMS)
+    expect(loading.value).toBe(false)
   })
 })

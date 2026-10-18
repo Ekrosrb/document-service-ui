@@ -49,6 +49,7 @@
 }
 
 :root {
+    color-scheme: dark;
     --background: var(--ink-black);
     --foreground: var(--lavender);
     --card: var(--prussian-blue);

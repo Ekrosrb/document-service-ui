@@ -1,6 +1,7 @@
 <script setup>
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import ProjectsTab from '@/components/projects/ProjectsTab.vue'
+import SearchTab from '@/components/search/SearchTab.vue'
 </script>
 
 <template>
@@ -10,12 +11,16 @@ import ProjectsTab from '@/components/projects/ProjectsTab.vue'
         <h1 class="text-lg font-semibold text-lavender-light">Document Service UI</h1>
         <TabsList>
           <TabsTrigger value="projects">Projects</TabsTrigger>
+          <TabsTrigger value="search">Search</TabsTrigger>
         </TabsList>
       </div>
     </header>
     <main class="mx-auto w-full max-w-7xl flex-1 p-6">
       <TabsContent value="projects">
         <ProjectsTab />
+      </TabsContent>
+      <TabsContent value="search">
+        <SearchTab />
       </TabsContent>
     </main>
   </Tabs>

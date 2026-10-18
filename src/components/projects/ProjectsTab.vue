@@ -1,9 +1,12 @@
 <script setup>
+import { useTemplateRef } from 'vue'
 import { useInfiniteScroll } from '@vueuse/core'
 import { getProjectsInfo } from '@/api'
 import { usePagedList } from '@/composables/usePagedList'
 import { Button } from '@/components/ui/button'
 import ProjectCard from './ProjectCard.vue'
+
+const root = useTemplateRef('root')
 
 const { items: projects, loading, error, hasMore, loadMore } = usePagedList(getProjectsInfo, {
   size: 50,
@@ -12,12 +15,12 @@ const { items: projects, loading, error, hasMore, loadMore } = usePagedList(getP
 
 useInfiniteScroll(window, loadMore, {
   distance: 200,
-  canLoadMore: () => hasMore.value && !error.value,
+  canLoadMore: () => hasMore.value && !error.value && root.value?.offsetParent != null,
 })
 </script>
 
 <template>
-  <div class="flex flex-col gap-6">
+  <div ref="root" class="flex flex-col gap-6">
     <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
       <ProjectCard v-for="project in projects" :key="project.projectKey" :project="project" />
     </div>
