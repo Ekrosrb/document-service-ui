@@ -1,6 +1,6 @@
 <script setup>
-import { computed, shallowRef, useTemplateRef, watch } from 'vue'
-import { X } from '@lucide/vue'
+import { computed, nextTick, shallowRef, useTemplateRef, watch } from 'vue'
+import { ArrowLeft, X } from '@lucide/vue'
 import { getDocument } from '@/api'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
@@ -9,7 +9,8 @@ import { formatDateTime, formatEnum } from '@/lib/format'
 
 /**
  * Shows one document with its content. `document` is the search result, shown right away
- * while the full document loads.
+ * while the full document loads. Clicking a relation opens that document in the panel, and
+ * the back button returns to the previous one.
  */
 const props = defineProps({
   document: { type: Object, required: true },
@@ -20,12 +21,14 @@ const emit = defineEmits(['close'])
 const badgeFields = ['kind', 'scope', 'type', 'author', 'memoryType']
 const contentSkeletonWidths = ['w-11/12', 'w-full', 'w-4/5', 'w-full', 'w-2/3', 'w-0', 'w-full', 'w-5/6', 'w-full', 'w-3/4', 'w-1/2']
 
+const current = shallowRef(props.document)
+const history = shallowRef([])
 const loaded = shallowRef(null)
 const error = shallowRef(null)
 const contentArea = useTemplateRef('contentArea')
 
-const full = computed(() => (loaded.value?.id === props.document.id ? loaded.value : null))
-const shown = computed(() => full.value ?? props.document)
+const full = computed(() => (loaded.value?.id === current.value.id ? loaded.value : null))
+const shown = computed(() => full.value ?? current.value)
 const loading = computed(() => !full.value && !error.value)
 
 const relationGroups = computed(() => [
@@ -34,18 +37,43 @@ const relationGroups = computed(() => [
 ])
 
 async function load() {
-  const id = props.document.id
+  const id = current.value.id
   error.value = null
   try {
     const document = await getDocument(id, { includeContent: true })
-    if (id === props.document.id) loaded.value = document
+    if (id === current.value.id) loaded.value = document
   } catch (e) {
-    if (id === props.document.id) error.value = e
+    if (id === current.value.id) error.value = e
   }
 }
 
+function openRelation(relation) {
+  if (relation.id === current.value.id) return
+  const entry = { document: shown.value, full: full.value, scrollTop: contentArea.value?.scrollTop ?? 0 }
+  history.value = [...history.value, entry]
+  current.value = { id: relation.id, name: relation.name }
+}
+
+async function back() {
+  const entry = history.value.at(-1)
+  if (!entry) return
+  history.value = history.value.slice(0, -1)
+  if (entry.full) loaded.value = entry.full
+  current.value = entry.document
+  await nextTick()
+  if (contentArea.value) contentArea.value.scrollTop = entry.scrollTop
+}
+
 watch(
-  () => props.document.id,
+  () => props.document,
+  (document) => {
+    history.value = []
+    current.value = document
+  },
+)
+
+watch(
+  () => current.value.id,
   () => {
     if (contentArea.value) contentArea.value.scrollTop = 0
     load()
@@ -61,8 +89,11 @@ watch(
     :aria-busy="loading"
   >
     <header class="flex flex-col gap-4 p-5">
-      <div class="flex items-start justify-between gap-4">
-        <h2 class="text-lg font-semibold text-foreground">{{ shown.name || 'Untitled' }}</h2>
+      <div class="flex items-start gap-2">
+        <Button v-if="history.length" variant="ghost" size="icon-sm" aria-label="Back to previous document" @click="back">
+          <ArrowLeft />
+        </Button>
+        <h2 class="mr-auto text-lg font-semibold text-foreground">{{ shown.name || 'Untitled' }}</h2>
         <Button variant="ghost" size="icon-sm" aria-label="Close document" @click="emit('close')">
           <X />
         </Button>
@@ -105,8 +136,11 @@ watch(
             <Badge
               v-for="relation in group.relations"
               :key="`${relation.type}-${relation.id}`"
+              as="button"
+              type="button"
               variant="outline"
-              class="h-auto max-w-full rounded-md whitespace-normal"
+              class="h-auto max-w-full cursor-pointer rounded-md text-left whitespace-normal hover:bg-muted"
+              @click="openRelation(relation)"
             >
               {{ formatEnum(relation.type) }}: {{ relation.name || 'Untitled' }} #{{ relation.id }}
             </Badge>
