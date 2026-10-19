@@ -4,12 +4,14 @@ import { useInfiniteScroll } from '@vueuse/core'
 import { getProjectsInfo, searchDocuments } from '@/api'
 import { usePagedList } from '@/composables/usePagedList'
 import { Button } from '@/components/ui/button'
+import DocumentPanel from './DocumentPanel.vue'
 import SearchForm from './SearchForm.vue'
 import SearchResults from './SearchResults.vue'
 
 const root = useTemplateRef('root')
 const request = shallowRef(null)
 const projectKeys = shallowRef([])
+const openDocument = shallowRef(null)
 
 const { items: documents, total, loading, error, hasMore, loadMore, reset } = usePagedList(
   (pageable) => searchDocuments(request.value, pageable),
@@ -41,23 +43,40 @@ onMounted(async () => {
   <div ref="root" class="flex flex-col gap-6">
     <SearchForm :project-keys="projectKeys" :loading="loading" @search="search" />
 
-    <template v-if="request">
-      <p v-if="total !== null" class="text-sm text-steel-gray">
-        {{ total }} {{ total === 1 ? 'result' : 'results' }}
-      </p>
-      <SearchResults v-if="documents.length" :documents="documents" />
+    <p v-if="request && total !== null" class="text-sm text-muted-foreground">
+      {{ total }} {{ total === 1 ? 'result' : 'results' }}
+    </p>
 
-      <p v-if="loading" class="text-center text-sm text-steel-gray">Searching…</p>
-      <div v-else-if="error" class="flex flex-col items-center gap-2 text-sm">
-        <div class="flex items-center gap-3">
-          <span class="text-destructive">{{ error.message }}</span>
-          <Button variant="outline" size="sm" @click="loadMore">Retry</Button>
+    <div
+      v-if="request"
+      class="grid items-start transition-[grid-template-columns,column-gap] duration-300 ease-out"
+      :class="openDocument ? 'grid-cols-[1fr_3fr] gap-x-6' : 'grid-cols-[1fr_0fr] gap-x-0'"
+    >
+      <div class="flex min-w-0 flex-col gap-6">
+        <SearchResults
+          v-if="documents.length"
+          :documents="documents"
+          :compact="openDocument !== null"
+          :open-id="openDocument?.id ?? null"
+          @open="(document) => (openDocument = document)"
+        />
+
+        <p v-if="loading" class="text-center text-sm text-muted-foreground">Searching…</p>
+        <div v-else-if="error" class="flex flex-col items-center gap-2 text-sm">
+          <div class="flex items-center gap-3">
+            <span class="text-destructive">{{ error.message }}</span>
+            <Button variant="outline" size="sm" @click="loadMore">Retry</Button>
+          </div>
+          <ul v-if="error.metadata && Object.keys(error.metadata).length" class="text-xs text-destructive/80">
+            <li v-for="(message, field) in error.metadata" :key="field">{{ field }}: {{ message }}</li>
+          </ul>
         </div>
-        <ul v-if="error.metadata && Object.keys(error.metadata).length" class="text-xs text-destructive/80">
-          <li v-for="(message, field) in error.metadata" :key="field">{{ field }}: {{ message }}</li>
-        </ul>
+        <p v-else-if="!documents.length && !hasMore" class="text-center text-sm text-muted-foreground">Nothing found.</p>
       </div>
-      <p v-else-if="!documents.length && !hasMore" class="text-center text-sm text-steel-gray">Nothing found.</p>
-    </template>
+
+      <div class="sticky top-20 min-w-0">
+        <DocumentPanel v-if="openDocument" :document="openDocument" @close="openDocument = null" />
+      </div>
+    </div>
   </div>
 </template>

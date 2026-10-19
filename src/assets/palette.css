@@ -1,17 +1,18 @@
 :root {
-    --black: #000000;
-    --ink-black: #0c1821;
-    --prussian-blue: #1b2a41;
-    --charcoal-blue: #324a5f;
-    --lavender: #ccc9dc;
+    --sky-reflection: #74b3ce;
+    --pacific-cyan: #508991;
+    --deep-space-blue: #172a3a;
+    --dark-teal: #004346;
+    --mint-leaf: #09bc8a;
 
-    --deep-navy: #13202f;
-    --slate-blue: #5c7a94;
-    --steel-gray: #8e9bb0;
-    --lavender-light: #e8e6f0;
-    --dusty-rose: #d9666f;
+    --white: #ffffff;
+    --mist: #eef2f4;
+    --frost: #dbe4e9;
+    --sky-mist: #e4f1f7;
+    --storm-gray: #44586a;
+    --coral-red: #d1495b;
 
-    --palette-stops: var(--black), var(--ink-black), var(--prussian-blue), var(--charcoal-blue), var(--lavender);
+    --palette-stops: var(--sky-reflection), var(--pacific-cyan), var(--deep-space-blue), var(--dark-teal), var(--mint-leaf);
     --gradient-top: linear-gradient(0deg, var(--palette-stops));
     --gradient-right: linear-gradient(90deg, var(--palette-stops));
     --gradient-bottom: linear-gradient(180deg, var(--palette-stops));
@@ -24,13 +25,14 @@
 }
 
 @theme inline {
-    --color-ink-black: var(--ink-black);
-    --color-prussian-blue: var(--prussian-blue);
-    --color-charcoal-blue: var(--charcoal-blue);
-    --color-lavender: var(--lavender);
-    --color-deep-navy: var(--deep-navy);
-    --color-slate-blue: var(--slate-blue);
-    --color-steel-gray: var(--steel-gray);
-    --color-lavender-light: var(--lavender-light);
-    --color-dusty-rose: var(--dusty-rose);
+    --color-sky-reflection: var(--sky-reflection);
+    --color-pacific-cyan: var(--pacific-cyan);
+    --color-deep-space-blue: var(--deep-space-blue);
+    --color-dark-teal: var(--dark-teal);
+    --color-mint-leaf: var(--mint-leaf);
+    --color-mist: var(--mist);
+    --color-frost: var(--frost);
+    --color-sky-mist: var(--sky-mist);
+    --color-storm-gray: var(--storm-gray);
+    --color-coral-red: var(--coral-red);
 }

@@ -8,8 +8,6 @@ export const BLANK = '   '
 
 export const DEFAULT_INCLUDES = Object.freeze({
   includeSummary: true,
-  includeContent: false,
-  includeRelations: false,
   includeSuperseded: false,
 })
 
@@ -23,7 +21,7 @@ export function buildFilledSearchForm() {
     memoryType: MemoryType.FACT,
     projectKey: PROJECT_KEY,
     authorName: AUTHOR_NAME,
-    includeContent: true,
+    includeSuperseded: true,
   }
 }
 
@@ -37,7 +35,7 @@ export function buildFilledSearchRequest() {
     projectKey: PROJECT_KEY,
     authorName: AUTHOR_NAME,
     ...DEFAULT_INCLUDES,
-    includeContent: true,
+    includeSuperseded: true,
   }
 }
 

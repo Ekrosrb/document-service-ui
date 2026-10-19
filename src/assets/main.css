@@ -8,6 +8,19 @@
 
 @custom-variant dark (&:is(.dark *));
 
+@theme {
+    --animate-shimmer: shimmer 1.6s ease-in-out infinite;
+
+    @keyframes shimmer {
+        from {
+            background-position: 140% 0;
+        }
+        to {
+            background-position: -40% 0;
+        }
+    }
+}
+
 @theme inline {
     --font-sans: 'Geist', sans-serif;
     --font-heading: var(--font-sans);
@@ -46,42 +59,45 @@
     --radius-md: calc(var(--radius) - 2px);
     --radius-lg: var(--radius);
     --radius-xl: calc(var(--radius) + 4px);
+    --radius-2xl: calc(var(--radius) * 1.8);
+    --radius-3xl: calc(var(--radius) * 2.2);
+    --radius-4xl: calc(var(--radius) * 2.6);
 }
 
 :root {
-    color-scheme: dark;
-    --background: var(--ink-black);
-    --foreground: var(--lavender);
-    --card: var(--prussian-blue);
-    --card-foreground: var(--lavender);
-    --popover: var(--prussian-blue);
-    --popover-foreground: var(--lavender);
-    --primary: var(--lavender);
-    --primary-foreground: var(--ink-black);
-    --secondary: var(--charcoal-blue);
-    --secondary-foreground: var(--lavender-light);
-    --muted: var(--deep-navy);
-    --muted-foreground: var(--steel-gray);
-    --accent: var(--charcoal-blue);
-    --accent-foreground: var(--lavender-light);
-    --destructive: var(--dusty-rose);
-    --border: var(--charcoal-blue);
-    --input: var(--charcoal-blue);
-    --ring: var(--slate-blue);
-    --chart-1: var(--lavender);
-    --chart-2: var(--steel-gray);
-    --chart-3: var(--slate-blue);
-    --chart-4: var(--charcoal-blue);
-    --chart-5: var(--prussian-blue);
+    color-scheme: light;
+    --background: var(--white);
+    --foreground: var(--deep-space-blue);
+    --card: var(--white);
+    --card-foreground: var(--deep-space-blue);
+    --popover: var(--white);
+    --popover-foreground: var(--deep-space-blue);
+    --primary: var(--dark-teal);
+    --primary-foreground: var(--white);
+    --secondary: var(--sky-mist);
+    --secondary-foreground: var(--dark-teal);
+    --muted: var(--mist);
+    --muted-foreground: var(--storm-gray);
+    --accent: var(--mist);
+    --accent-foreground: var(--deep-space-blue);
+    --destructive: var(--coral-red);
+    --border: var(--frost);
+    --input: var(--frost);
+    --ring: var(--sky-reflection);
+    --chart-1: var(--mint-leaf);
+    --chart-2: var(--sky-reflection);
+    --chart-3: var(--pacific-cyan);
+    --chart-4: var(--dark-teal);
+    --chart-5: var(--deep-space-blue);
     --radius: 0.625rem;
-    --sidebar: var(--deep-navy);
-    --sidebar-foreground: var(--lavender);
-    --sidebar-primary: var(--lavender);
-    --sidebar-primary-foreground: var(--ink-black);
-    --sidebar-accent: var(--prussian-blue);
-    --sidebar-accent-foreground: var(--lavender-light);
-    --sidebar-border: var(--prussian-blue);
-    --sidebar-ring: var(--slate-blue);
+    --sidebar: var(--sky-reflection);
+    --sidebar-foreground: var(--deep-space-blue);
+    --sidebar-primary: var(--dark-teal);
+    --sidebar-primary-foreground: var(--white);
+    --sidebar-accent: var(--sky-mist);
+    --sidebar-accent-foreground: var(--deep-space-blue);
+    --sidebar-border: var(--frost);
+    --sidebar-ring: var(--sky-reflection);
 }
 
 @layer base {

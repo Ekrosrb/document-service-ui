@@ -1,7 +1,7 @@
 import { DocumentKind } from '@/api/enums'
 
 export const SEARCH_FILTER_FIELDS = Object.freeze(['query', 'kind', 'scope', 'author', 'memoryType', 'projectKey', 'authorName'])
-export const SEARCH_INCLUDE_FIELDS = Object.freeze(['includeSummary', 'includeContent', 'includeRelations', 'includeSuperseded'])
+export const SEARCH_INCLUDE_FIELDS = Object.freeze(['includeSummary', 'includeSuperseded'])
 
 export const AT_LEAST_ONE_FILTER_MESSAGE = 'Fill in at least one filter or a search query.'
 export const MEMORY_TYPE_KIND_MESSAGE = 'Memory type can only be used with kind MEMORY.'
@@ -17,8 +17,6 @@ export function createSearchForm() {
     projectKey: '',
     authorName: '',
     includeSummary: true,
-    includeContent: false,
-    includeRelations: false,
     includeSuperseded: false,
   }
 }

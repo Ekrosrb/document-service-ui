@@ -25,11 +25,11 @@ useInfiniteScroll(window, loadMore, {
       <ProjectCard v-for="project in projects" :key="project.projectKey" :project="project" />
     </div>
 
-    <p v-if="loading" class="text-center text-sm text-steel-gray">Loading projects…</p>
+    <p v-if="loading" class="text-center text-sm text-muted-foreground">Loading projects…</p>
     <div v-else-if="error" class="flex items-center justify-center gap-3 text-sm">
       <span class="text-destructive">{{ error.message }}</span>
       <Button variant="outline" size="sm" @click="loadMore">Retry</Button>
     </div>
-    <p v-else-if="!projects.length && !hasMore" class="text-center text-sm text-steel-gray">No projects yet.</p>
+    <p v-else-if="!projects.length && !hasMore" class="text-center text-sm text-muted-foreground">No projects yet.</p>
   </div>
 </template>
