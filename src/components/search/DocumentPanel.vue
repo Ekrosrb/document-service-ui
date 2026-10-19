@@ -5,6 +5,7 @@ import { getDocument } from '@/api'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Skeleton } from '@/components/ui/skeleton'
+import DocumentContent from '@/components/document/DocumentContent.vue'
 import { formatDateTime, formatEnum } from '@/lib/format'
 
 /**
@@ -159,11 +160,13 @@ watch(
       <div v-else-if="loading" class="flex flex-col gap-2.5">
         <Skeleton v-for="(width, index) in contentSkeletonWidths" :key="index" class="h-3.5" :class="width" />
       </div>
-      <pre
+      <DocumentContent
         v-else-if="full.content"
         :key="full.id"
-        class="animate-in font-mono text-sm leading-relaxed whitespace-pre-wrap text-foreground duration-300 fade-in"
-      >{{ full.content }}</pre>
+        class="animate-in duration-300 fade-in"
+        :content="full.content"
+        :type="full.type"
+      />
       <p v-else class="text-sm text-muted-foreground">No content.</p>
     </div>
   </section>

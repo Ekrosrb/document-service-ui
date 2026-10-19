@@ -16,6 +16,8 @@ export const DocumentType = Object.freeze({
   XML: 'XML',
   MARKDOWN: 'MARKDOWN',
   TOON: 'TOON',
+  HTML: 'HTML',
+  CSS: 'CSS',
   CUSTOM: 'CUSTOM',
 })
 
