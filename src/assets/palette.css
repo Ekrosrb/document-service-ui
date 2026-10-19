@@ -1,18 +1,28 @@
 :root {
-    --sky-reflection: #74b3ce;
-    --pacific-cyan: #508991;
-    --deep-space-blue: #172a3a;
-    --dark-teal: #004346;
-    --mint-leaf: #09bc8a;
+    --cool-steel: #88a2aa;
+    --khaki-beige: #ada296;
+    --salmon: #e2856e;
+    --scarlet-fire: #f42c04;
+    --ink-black: #0f1a20;
 
     --white: #ffffff;
-    --mist: #eef2f4;
-    --frost: #dbe4e9;
-    --sky-mist: #e4f1f7;
-    --storm-gray: #44586a;
-    --coral-red: #d1495b;
+    --linen: #f4f2ef;
+    --pebble: #e2e5e6;
+    --steel-mist: #e6edef;
+    --slate-ink: #4b5960;
 
-    --palette-stops: var(--sky-reflection), var(--pacific-cyan), var(--deep-space-blue), var(--dark-teal), var(--mint-leaf);
+    --coffee-bean: #170312;
+    --midnight-violet: #33032f;
+    --deep-purple: #531253;
+    --silver-steel: #a0acad;
+    --celadon: #97d8b2;
+
+    --plum-shadow: #240620;
+    --violet-edge: #4a1645;
+    --lilac-white: #f1eaf0;
+
+    --palette-stops: var(--cool-steel), var(--khaki-beige), var(--salmon), var(--scarlet-fire), var(--ink-black);
+    --dark-palette-stops: var(--coffee-bean), var(--midnight-violet), var(--deep-purple), var(--silver-steel), var(--celadon);
     --gradient-top: linear-gradient(0deg, var(--palette-stops));
     --gradient-right: linear-gradient(90deg, var(--palette-stops));
     --gradient-bottom: linear-gradient(180deg, var(--palette-stops));
@@ -24,15 +34,34 @@
     --gradient-radial: radial-gradient(var(--palette-stops));
 }
 
+.dark {
+    --gradient-top: linear-gradient(0deg, var(--dark-palette-stops));
+    --gradient-right: linear-gradient(90deg, var(--dark-palette-stops));
+    --gradient-bottom: linear-gradient(180deg, var(--dark-palette-stops));
+    --gradient-left: linear-gradient(270deg, var(--dark-palette-stops));
+    --gradient-top-right: linear-gradient(45deg, var(--dark-palette-stops));
+    --gradient-bottom-right: linear-gradient(135deg, var(--dark-palette-stops));
+    --gradient-top-left: linear-gradient(225deg, var(--dark-palette-stops));
+    --gradient-bottom-left: linear-gradient(315deg, var(--dark-palette-stops));
+    --gradient-radial: radial-gradient(var(--dark-palette-stops));
+}
+
 @theme inline {
-    --color-sky-reflection: var(--sky-reflection);
-    --color-pacific-cyan: var(--pacific-cyan);
-    --color-deep-space-blue: var(--deep-space-blue);
-    --color-dark-teal: var(--dark-teal);
-    --color-mint-leaf: var(--mint-leaf);
-    --color-mist: var(--mist);
-    --color-frost: var(--frost);
-    --color-sky-mist: var(--sky-mist);
-    --color-storm-gray: var(--storm-gray);
-    --color-coral-red: var(--coral-red);
+    --color-cool-steel: var(--cool-steel);
+    --color-khaki-beige: var(--khaki-beige);
+    --color-salmon: var(--salmon);
+    --color-scarlet-fire: var(--scarlet-fire);
+    --color-ink-black: var(--ink-black);
+    --color-linen: var(--linen);
+    --color-pebble: var(--pebble);
+    --color-steel-mist: var(--steel-mist);
+    --color-slate-ink: var(--slate-ink);
+    --color-coffee-bean: var(--coffee-bean);
+    --color-midnight-violet: var(--midnight-violet);
+    --color-deep-purple: var(--deep-purple);
+    --color-silver-steel: var(--silver-steel);
+    --color-celadon: var(--celadon);
+    --color-plum-shadow: var(--plum-shadow);
+    --color-violet-edge: var(--violet-edge);
+    --color-lilac-white: var(--lilac-white);
 }

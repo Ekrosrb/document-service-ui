@@ -56,13 +56,13 @@ watch(
 
 <template>
   <section
-    class="flex h-[calc(100vh-6.5rem)] min-h-0 flex-col overflow-hidden rounded-3xl bg-card shadow-sm ring-1 ring-foreground/5"
+    class="flex h-[calc(100vh-6.5rem)] min-h-0 flex-col overflow-hidden rounded-3xl bg-card shadow-sm ring-1 ring-foreground/5 dark:ring-foreground/10"
     :aria-label="shown.name || `Document ${shown.id}`"
     :aria-busy="loading"
   >
     <header class="flex flex-col gap-4 p-5">
       <div class="flex items-start justify-between gap-4">
-        <h2 class="text-lg font-semibold text-deep-space-blue">{{ shown.name || 'Untitled' }}</h2>
+        <h2 class="text-lg font-semibold text-foreground">{{ shown.name || 'Untitled' }}</h2>
         <Button variant="ghost" size="icon-sm" aria-label="Close document" @click="emit('close')">
           <X />
         </Button>
@@ -77,7 +77,7 @@ watch(
         </template>
       </div>
 
-      <p v-if="shown.summary" class="text-[0.9375rem] leading-relaxed text-deep-space-blue">{{ shown.summary }}</p>
+      <p v-if="shown.summary" class="text-[0.9375rem] leading-relaxed text-foreground">{{ shown.summary }}</p>
       <div v-else-if="loading" class="flex flex-col gap-2 py-0.5">
         <Skeleton class="h-4 w-full" />
         <Skeleton class="h-4 w-2/3" />
@@ -128,7 +128,7 @@ watch(
       <pre
         v-else-if="full.content"
         :key="full.id"
-        class="animate-in font-mono text-sm leading-relaxed whitespace-pre-wrap text-deep-space-blue duration-300 fade-in"
+        class="animate-in font-mono text-sm leading-relaxed whitespace-pre-wrap text-foreground duration-300 fade-in"
       >{{ full.content }}</pre>
       <p v-else class="text-sm text-muted-foreground">No content.</p>
     </div>

@@ -54,7 +54,7 @@ function reset() {
 </script>
 
 <template>
-  <form class="flex flex-col gap-5 rounded-3xl bg-card shadow-sm ring-1 ring-foreground/5 p-5" novalidate @submit.prevent="submit">
+  <form class="flex flex-col gap-5 rounded-3xl bg-card shadow-sm ring-1 ring-foreground/5 dark:ring-foreground/10 p-5" novalidate @submit.prevent="submit">
     <div class="flex flex-col gap-2">
       <Label for="search-query">Search query</Label>
       <div class="flex gap-2">

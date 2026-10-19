@@ -42,7 +42,7 @@ function toggle(id) {
 </script>
 
 <template>
-  <div class="rounded-3xl bg-card shadow-sm ring-1 ring-foreground/5 px-3 py-2">
+  <div class="rounded-3xl bg-card shadow-sm ring-1 ring-foreground/5 dark:ring-foreground/10 px-3 py-2">
     <Table>
       <TableHeader>
         <TableRow class="hover:bg-transparent">
@@ -60,7 +60,7 @@ function toggle(id) {
         <template v-for="document in documents" :key="document.id">
           <TableRow
             class="cursor-pointer"
-            :class="{ 'border-b-0': isExpanded(document.id), 'bg-sky-mist': document.id === openId }"
+            :class="{ 'border-b-0': isExpanded(document.id), 'bg-secondary': document.id === openId }"
             :aria-current="document.id === openId || undefined"
             :tabindex="compact ? 0 : undefined"
             @click="onRowClick(document)"
@@ -69,7 +69,7 @@ function toggle(id) {
             <TableCell v-if="!compact">
               <button
                 type="button"
-                class="flex size-6 items-center justify-center rounded-md text-muted-foreground hover:text-deep-space-blue focus-visible:ring-3 focus-visible:ring-ring/50 focus-visible:outline-none"
+                class="flex size-6 items-center justify-center rounded-md text-muted-foreground hover:text-foreground focus-visible:ring-3 focus-visible:ring-ring/50 focus-visible:outline-none"
                 :aria-expanded="isExpanded(document.id)"
                 :aria-controls="`document-details-${document.id}`"
                 :aria-label="`Details of ${document.name || 'document ' + document.id}`"
@@ -78,7 +78,7 @@ function toggle(id) {
                 <ChevronRight class="size-4 transition-transform duration-300" :class="{ 'rotate-90': isExpanded(document.id) }" />
               </button>
             </TableCell>
-            <TableCell class="font-medium whitespace-normal text-deep-space-blue">
+            <TableCell class="font-medium whitespace-normal text-foreground">
               {{ document.name || 'Untitled' }}
               <span v-if="compact" class="mt-1 block text-xs font-normal text-muted-foreground">
                 {{ formatEnum(document.kind) }}<template v-if="document.projectKey"> · {{ document.projectKey }}</template>
@@ -109,7 +109,7 @@ function toggle(id) {
                 <div class="overflow-hidden">
                   <div class="mb-2 flex flex-col gap-4 rounded-2xl bg-muted/50 px-10 py-4">
                     <div class="flex items-start justify-between gap-6">
-                      <p v-if="document.summary" class="max-w-4xl text-sm leading-relaxed text-deep-space-blue">{{ document.summary }}</p>
+                      <p v-if="document.summary" class="max-w-4xl text-sm leading-relaxed text-foreground">{{ document.summary }}</p>
                       <p v-else class="text-sm text-muted-foreground">No summary loaded.</p>
                       <Button variant="outline" size="sm" @click="emit('open', document)">
                         <PanelRightOpen />
