@@ -220,6 +220,7 @@ onMounted(() => {
             v-for="document in results"
             :key="document.id"
             type="button"
+            data-test="row"
             class="grid items-center gap-4 border-b border-border py-3 text-left text-sm hover:bg-foreground/4"
             :class="ROW_COLUMNS"
             @click="emit('open', document)"
@@ -261,7 +262,7 @@ onMounted(() => {
     </div>
 
     <div class="flex items-center justify-between gap-4">
-      <span class="text-[13px] text-neutral-700 tabular-nums">{{ pageLabel }}</span>
+      <span data-test="page-label" class="text-[13px] text-neutral-700 tabular-nums">{{ pageLabel }}</span>
       <div class="flex gap-2">
         <Button
           variant="outline"

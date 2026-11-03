@@ -76,7 +76,7 @@ onMounted(loadRecent)
       <h1 class="text-5xl leading-none tracking-[-0.02em]">Overview</h1>
     </div>
 
-    <div class="grid grid-cols-[repeat(auto-fit,minmax(180px,1fr))] border-y-2 border-border">
+    <div data-test="stats" class="grid grid-cols-[repeat(auto-fit,minmax(180px,1fr))] border-y-2 border-border">
       <button
         v-for="stat in stats"
         :key="stat.label"
@@ -92,7 +92,7 @@ onMounted(loadRecent)
     </div>
 
     <div class="flex flex-wrap items-start gap-8">
-      <div class="flex min-w-0 flex-[2_1_520px] flex-col">
+      <div data-test="recent" class="flex min-w-0 flex-[2_1_520px] flex-col">
         <div class="flex flex-wrap items-baseline justify-between gap-4 border-b-2 border-border pb-3">
           <h2 class="text-xl whitespace-nowrap">Recently updated</h2>
           <Button variant="ghost" class="whitespace-nowrap" @click="emit('go', 'documents')">All documents →</Button>
@@ -112,6 +112,7 @@ onMounted(loadRecent)
           v-for="document in recent"
           :key="document.id"
           type="button"
+          data-test="recent-row"
           class="grid grid-cols-[64px_minmax(0,1fr)_auto] items-center gap-4 border-b border-border py-3 text-left hover:bg-foreground/4"
           @click="emit('open', document)"
         >
@@ -128,7 +129,7 @@ onMounted(loadRecent)
       </div>
 
       <div class="flex min-w-0 flex-[1_1_280px] flex-col gap-8">
-        <div class="flex flex-col">
+        <div data-test="projects" class="flex flex-col">
           <div class="flex items-baseline justify-between border-b-2 border-border pb-3">
             <h2 class="text-xl">Projects</h2>
             <span class="micro-label">Docs</span>
@@ -146,7 +147,7 @@ onMounted(loadRecent)
           </button>
         </div>
 
-        <div v-for="group in typeGroups" :key="group.label" class="flex flex-col">
+        <div v-for="group in typeGroups" :key="group.label" data-test="by-type" class="flex flex-col">
           <div class="flex items-baseline justify-between gap-3 border-b-2 border-border pb-3">
             <h2 class="text-xl">{{ group.label }}</h2>
             <span class="micro-label tabular-nums">{{ group.total }}</span>
@@ -154,6 +155,7 @@ onMounted(loadRecent)
           <div
             v-for="entry in group.rows"
             :key="entry.type"
+            data-test="type-row"
             class="grid grid-cols-[84px_minmax(0,1fr)_28px] items-center gap-3 border-b border-border py-2"
           >
             <span class="font-mono text-xs">

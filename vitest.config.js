@@ -6,7 +6,8 @@ export default mergeConfig(
   viteConfig,
   defineConfig({
     test: {
-      environment: 'node',
+      environment: 'jsdom',
+      setupFiles: ['./vitest.setup.js'],
       exclude: [...configDefaults.exclude, 'e2e/**'],
       root: fileURLToPath(new URL('./', import.meta.url)),
     },

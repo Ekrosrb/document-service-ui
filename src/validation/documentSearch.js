@@ -1,7 +1,7 @@
 import { DocumentKind } from '@/api/enums'
 
-export const SEARCH_FILTER_FIELDS = Object.freeze(['query', 'kind', 'scope', 'author', 'memoryType', 'projectKey', 'authorName'])
-export const SEARCH_INCLUDE_FIELDS = Object.freeze(['includeSummary', 'includeRelations', 'includeSuperseded'])
+const SEARCH_FILTER_FIELDS = Object.freeze(['query', 'kind', 'scope', 'author', 'memoryType', 'projectKey', 'authorName'])
+const SEARCH_INCLUDE_FIELDS = Object.freeze(['includeSummary', 'includeRelations', 'includeSuperseded'])
 
 export const MEMORY_TYPE_KIND_MESSAGE = 'Memory type can only be used with kind MEMORY.'
 

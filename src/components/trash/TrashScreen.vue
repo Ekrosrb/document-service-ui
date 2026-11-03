@@ -113,6 +113,7 @@ onMounted(load)
           <div
             v-for="document in rows"
             :key="document.id"
+            data-test="trash-row"
             class="grid items-center gap-4 border-b border-border py-3 text-sm"
             :class="ROW_COLUMNS"
           >

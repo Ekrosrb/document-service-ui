@@ -1,19 +1,19 @@
 import { Author, DocumentKind, DocumentType, MemoryType, Scope } from '@/api/enums'
 
 /** Fields a PUT /document/{id} accepts; everything else is read-only. */
-export const EDITABLE_ENUM_FIELDS = Object.freeze({ type: Object.values(DocumentType), memoryType: Object.values(MemoryType) })
-export const EDITABLE_TEXT_FIELDS = Object.freeze(['name', 'authorName', 'projectKey', 'summary', 'content', 'customExtension'])
+const EDITABLE_ENUM_FIELDS = Object.freeze({ type: Object.values(DocumentType), memoryType: Object.values(MemoryType) })
+const EDITABLE_TEXT_FIELDS = Object.freeze(['name', 'authorName', 'projectKey', 'summary', 'content', 'customExtension'])
 
 /** Server-side maxLength of the text fields; content is unbounded. */
 export const MAX_LENGTHS = Object.freeze({ name: 250, authorName: 250, projectKey: 250, summary: 1024, customExtension: 50 })
 
 /** Fields a POST /document needs on top of the editable ones, and the ones it requires. */
-export const CREATE_ENUM_FIELDS = Object.freeze({
+const CREATE_ENUM_FIELDS = Object.freeze({
   kind: Object.values(DocumentKind),
   scope: Object.values(Scope),
   author: Object.values(Author),
 })
-export const REQUIRED_CREATE_FIELDS = Object.freeze(['kind', 'scope', 'author', 'summary', 'content'])
+const REQUIRED_CREATE_FIELDS = Object.freeze(['kind', 'scope', 'author', 'summary', 'content'])
 
 export const REQUIRED_MESSAGE = 'Required.'
 export const PROJECT_KEY_REQUIRED_MESSAGE = 'Project key must be specified for scope: Project.'

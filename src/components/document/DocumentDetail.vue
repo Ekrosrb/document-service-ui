@@ -191,10 +191,11 @@ watch(() => current.value?.id, load, { immediate: true })
 
 <template>
   <section class="flex flex-col gap-6" :aria-busy="loading">
-    <Button variant="ghost" class="self-start whitespace-nowrap" @click="back">← {{ backLabel }}</Button>
+    <Button data-test="back" variant="ghost" class="self-start whitespace-nowrap" @click="back">← {{ backLabel }}</Button>
 
     <div
       v-if="deleted"
+      data-test="banner"
       class="flex flex-wrap items-center justify-between gap-4 bg-danger-100 px-4 py-3 text-danger-900"
     >
       <span class="text-sm">
@@ -269,6 +270,7 @@ watch(() => current.value?.id, load, { immediate: true })
           <div
             v-for="row in metadata"
             :key="row.key"
+            data-test="meta-row"
             class="grid grid-cols-[104px_minmax(0,1fr)] gap-3 border-b border-border py-2 text-sm"
           >
             <span class="text-[13px] text-neutral-700">{{ row.key }}</span>
@@ -304,6 +306,7 @@ watch(() => current.value?.id, load, { immediate: true })
           <div
             v-for="relation in group.relations ?? []"
             :key="`${relation.type}-${relation.id}`"
+            data-test="relation-row"
             class="grid grid-cols-[104px_minmax(0,1fr)_auto] items-center gap-3 border-b border-border py-2 text-sm"
           >
             <span class="text-[11px] tracking-[0.06em] uppercase text-accent-700">{{ formatEnum(relation.type) }}</span>
