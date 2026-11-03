@@ -31,6 +31,26 @@ function search(newRequest) {
   recheckScroll()
 }
 
+/** Drops a document deleted elsewhere from the results and closes its panel. */
+function dropDocument(id) {
+  const index = documents.value.findIndex((document) => document.id === id)
+  if (index !== -1) {
+    documents.value.splice(index, 1)
+    if (total.value !== null) total.value -= 1
+  }
+  if (openDocument.value?.id === id) openDocument.value = null
+}
+
+/** Copies the fields of a document saved elsewhere into its result row. */
+function applyUpdate(document) {
+  const result = documents.value.find((item) => item.id === document.id)
+  if (!result) return
+  const { content, ...fields } = document
+  Object.assign(result, fields)
+}
+
+defineExpose({ dropDocument, applyUpdate })
+
 onMounted(async () => {
   try {
     const page = await getProjectsInfo({ size: 200, sort: 'projectKey,asc' })

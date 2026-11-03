@@ -1,5 +1,5 @@
 <script setup>
-import { ref, shallowRef } from 'vue'
+import { ref, shallowRef, useTemplateRef } from 'vue'
 import { Moon, Sun } from '@lucide/vue'
 import { useTheme } from '@/composables/useTheme'
 import { Button } from '@/components/ui/button'
@@ -10,6 +10,7 @@ import SearchTab from '@/components/search/SearchTab.vue'
 
 const { dark, toggle } = useTheme()
 
+const searchTab = useTemplateRef('searchTab')
 const tab = ref('projects')
 const openedDocument = shallowRef(null)
 
@@ -17,6 +18,12 @@ const openedDocument = shallowRef(null)
 function openDocumentView(document) {
   openedDocument.value = document
   tab.value = 'document'
+}
+
+/** Leaves the Document tab once the last open document is gone. */
+function closeDocumentView() {
+  openedDocument.value = null
+  tab.value = 'search'
 }
 </script>
 
@@ -48,10 +55,15 @@ function openDocumentView(document) {
         <ProjectsTab />
       </TabsContent>
       <TabsContent value="search">
-        <SearchTab @open-view="openDocumentView" />
+        <SearchTab ref="searchTab" @open-view="openDocumentView" />
       </TabsContent>
       <TabsContent value="document">
-        <DocumentTab :document="openedDocument" />
+        <DocumentTab
+          :document="openedDocument"
+          @deleted="searchTab?.dropDocument($event)"
+          @updated="searchTab?.applyUpdate($event)"
+          @exit="closeDocumentView"
+        />
       </TabsContent>
     </main>
   </Tabs>

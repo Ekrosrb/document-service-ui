@@ -1,37 +1,65 @@
 <script setup>
-import { computed, nextTick, shallowRef, watch } from 'vue'
-import { ArrowLeft } from '@lucide/vue'
-import { getDocument } from '@/api'
+import { computed, nextTick, reactive, ref, shallowRef, watch } from 'vue'
+import { ArrowLeft, Pencil, Save, Trash2, Undo2, X } from '@lucide/vue'
+import { DocumentKind, getDocument, removeDocument, removeDocumentRelation, updateDocument } from '@/api'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
+import { Checkbox } from '@/components/ui/checkbox'
+import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
+import { NativeSelect, NativeSelectOption } from '@/components/ui/native-select'
 import { Skeleton } from '@/components/ui/skeleton'
+import { Textarea } from '@/components/ui/textarea'
+import ConfirmDialog from './ConfirmDialog.vue'
 import DocumentContent from './DocumentContent.vue'
 import { formatDateTime, formatEnum } from '@/lib/format'
+import { EDITABLE_ENUM_FIELDS, MAX_LENGTHS, createEditForm, toUpdateRequest, validateEditForm } from '@/validation/documentEdit'
 
 /**
- * Read-only full page view of one document. `document` is the search result the view was
- * opened with, shown right away while the full document loads. Clicking a relation opens
- * that document in the same view, and the back button returns to the previous one.
+ * Read and edit view of one document. `document` is the search result the view was opened
+ * with, shown right away while the full document loads. Clicking a relation opens that
+ * document in the same view, and the back button returns to the previous one. Edit mode
+ * saves the changed fields, removes relations and deletes the document.
  */
 const props = defineProps({
   document: { type: Object, default: null },
 })
 
+const emit = defineEmits(['deleted', 'exit', 'updated'])
+
 const badgeFields = ['kind', 'scope', 'type', 'author', 'memoryType']
 const contentSkeletonWidths = ['w-11/12', 'w-full', 'w-4/5', 'w-full', 'w-2/3', 'w-0', 'w-full', 'w-5/6', 'w-full', 'w-3/4', 'w-1/2']
+const enumFieldLabels = { type: 'Type', memoryType: 'Memory type' }
+const inlineTextFields = [
+  { field: 'projectKey', label: 'Project key' },
+  { field: 'authorName', label: 'Author name' },
+]
 
 const current = shallowRef(props.document)
 const history = shallowRef([])
 const loaded = shallowRef(null)
 const error = shallowRef(null)
 
+const mode = shallowRef('read')
+const form = reactive(createEditForm())
+const formSource = shallowRef(null)
+const errors = ref({})
+const actionError = shallowRef(null)
+const saving = shallowRef(false)
+const removingRelation = shallowRef(null)
+const deleting = shallowRef(false)
+const confirmDelete = shallowRef(false)
+const pendingRelation = shallowRef(null)
+
 const full = computed(() => (loaded.value?.id === current.value?.id ? loaded.value : null))
 const shown = computed(() => full.value ?? current.value)
 const loading = computed(() => current.value !== null && !full.value && !error.value)
+const editing = computed(() => mode.value === 'edit')
+const dirty = computed(() => formSource.value !== null && Object.keys(toUpdateRequest(form, formSource.value)).length > 0)
 
 const relationGroups = computed(() => [
-  { label: 'Links to', relations: shown.value?.relations },
-  { label: 'Referenced by', relations: shown.value?.referencedBy },
+  { label: 'Links to', relations: shown.value?.relations, outgoing: true },
+  { label: 'Referenced by', relations: shown.value?.referencedBy, outgoing: false },
 ])
 
 async function load() {
@@ -46,21 +74,106 @@ async function load() {
   }
 }
 
+function resetForm(document) {
+  Object.assign(form, createEditForm(document))
+  formSource.value = document
+  errors.value = {}
+  actionError.value = null
+}
+
 function openRelation(relation) {
   if (relation.id === current.value?.id) return
+  if (dirty.value) {
+    pendingRelation.value = relation
+    return
+  }
   history.value = [...history.value, { document: shown.value, full: full.value, scrollY: window.scrollY }]
   current.value = { id: relation.id, name: relation.name }
+  mode.value = 'read'
   window.scrollTo({ top: 0 })
 }
 
-async function back() {
+function discardAndOpenRelation() {
+  const relation = pendingRelation.value
+  pendingRelation.value = null
+  if (!relation) return
+  resetForm(formSource.value)
+  openRelation(relation)
+}
+
+/** Returns to the previous document; `refresh` reloads it instead of reusing the cached one. */
+async function back({ refresh = false } = {}) {
   const entry = history.value.at(-1)
   if (!entry) return
   history.value = history.value.slice(0, -1)
-  if (entry.full) loaded.value = entry.full
+  if (entry.full && !refresh) loaded.value = entry.full
   current.value = entry.document
   await nextTick()
-  window.scrollTo({ top: entry.scrollY })
+  window.scrollTo({ top: refresh ? 0 : entry.scrollY })
+}
+
+function discard() {
+  resetForm(formSource.value)
+}
+
+async function save() {
+  errors.value = validateEditForm(form)
+  if (Object.keys(errors.value).length) return
+  const document = formSource.value
+  const request = toUpdateRequest(form, document)
+  if (!Object.keys(request).length) return
+
+  saving.value = true
+  actionError.value = null
+  try {
+    await updateDocument(document.id, request)
+    const saved = await getDocument(document.id, { includeContent: true })
+    if (current.value?.id === saved.id) loaded.value = saved
+    resetForm(saved)
+    mode.value = 'read'
+    emit('updated', saved)
+  } catch (e) {
+    actionError.value = e
+  } finally {
+    saving.value = false
+  }
+}
+
+async function removeRelation(group, relation) {
+  const [documentId, relatedDocumentId] = group.outgoing ? [shown.value.id, relation.id] : [relation.id, shown.value.id]
+  removingRelation.value = `${group.label}-${relation.id}`
+  actionError.value = null
+  try {
+    await removeDocumentRelation(documentId, relatedDocumentId)
+    await load()
+  } catch (e) {
+    actionError.value = e
+  } finally {
+    removingRelation.value = null
+  }
+}
+
+/** Soft-deletes the shown document, then returns to the previous one or to the search tab. */
+async function remove() {
+  const id = shown.value.id
+  deleting.value = true
+  actionError.value = null
+  try {
+    await removeDocument(id)
+    confirmDelete.value = false
+    mode.value = 'read'
+    emit('deleted', id)
+    if (history.value.length) {
+      loaded.value = null
+      await back({ refresh: true })
+    } else {
+      emit('exit')
+    }
+  } catch (e) {
+    actionError.value = e
+  } finally {
+    deleting.value = false
+  }
 }
 
 watch(
@@ -68,11 +181,16 @@ watch(
   (document) => {
     history.value = []
     current.value = document
+    mode.value = 'read'
     window.scrollTo({ top: 0 })
   },
 )
 
 watch(() => current.value?.id, load, { immediate: true })
+
+watch(full, (document) => {
+  if (document && formSource.value?.id !== document.id) resetForm(document)
+})
 </script>
 
 <template>
@@ -83,11 +201,39 @@ watch(() => current.value?.id, load, { immediate: true })
   <div v-else class="flex flex-col gap-6" :aria-busy="loading">
     <section class="flex flex-col gap-5 rounded-3xl bg-card p-6 shadow-sm ring-1 ring-foreground/5 dark:ring-foreground/10">
       <div class="flex items-start gap-3">
-        <Button v-if="history.length" variant="ghost" size="icon-sm" aria-label="Back to previous document" @click="back">
+        <Button v-if="history.length" variant="ghost" size="icon-sm" aria-label="Back to previous document" @click="back()">
           <ArrowLeft />
         </Button>
-        <h2 class="text-2xl font-semibold text-foreground">{{ shown.name || 'Untitled' }}</h2>
+        <h2 class="mr-auto text-2xl font-semibold text-foreground">{{ shown.name || 'Untitled' }}</h2>
+
+        <div class="flex shrink-0 items-center gap-2">
+          <Badge v-if="dirty" variant="outline" class="text-muted-foreground">Unsaved changes</Badge>
+          <Button :variant="editing ? 'ghost' : 'secondary'" size="sm" :aria-pressed="!editing" @click="mode = 'read'">
+            Read
+          </Button>
+          <Button :variant="editing ? 'secondary' : 'ghost'" size="sm" :aria-pressed="editing" :disabled="!full" @click="mode = 'edit'">
+            <Pencil />
+            Edit
+          </Button>
+        </div>
       </div>
+
+      <div v-if="editing" class="flex flex-wrap items-center gap-2">
+        <Button :variant="dirty ? 'default' : 'outline'" size="sm" :disabled="!dirty || saving" @click="save">
+          <Save />
+          {{ saving ? 'Saving…' : 'Save' }}
+        </Button>
+        <Button variant="outline" size="sm" :disabled="!dirty || saving" @click="discard">
+          <Undo2 />
+          Discard
+        </Button>
+        <Button variant="destructive" size="sm" class="ml-auto" :disabled="saving" @click="confirmDelete = true">
+          <Trash2 />
+          Delete
+        </Button>
+      </div>
+
+      <p v-if="actionError" class="text-sm text-destructive">{{ actionError.message }}</p>
 
       <div class="flex flex-wrap gap-2">
         <template v-for="field in badgeFields" :key="field">
@@ -98,11 +244,78 @@ watch(() => current.value?.id, load, { immediate: true })
         </template>
       </div>
 
-      <p v-if="shown.summary" class="max-w-4xl text-[0.9375rem] leading-relaxed text-foreground">{{ shown.summary }}</p>
-      <div v-else-if="loading" class="flex max-w-4xl flex-col gap-2 py-0.5">
-        <Skeleton class="h-4 w-full" />
-        <Skeleton class="h-4 w-2/3" />
-      </div>
+      <template v-if="editing">
+        <div class="flex flex-col gap-2">
+          <Label for="document-name">Name</Label>
+          <Input id="document-name" v-model="form.name" :maxlength="MAX_LENGTHS.name" :aria-invalid="Boolean(errors.name)" />
+          <p v-if="errors.name" class="text-xs text-destructive">{{ errors.name }}</p>
+        </div>
+
+        <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+          <div v-for="(label, field) in enumFieldLabels" :key="field" class="flex flex-col gap-2">
+            <Label :for="`document-${field}`">{{ label }}</Label>
+            <NativeSelect
+              :id="`document-${field}`"
+              v-model="form[field]"
+              class="w-full"
+              :disabled="field === 'memoryType' && shown.kind !== DocumentKind.MEMORY"
+            >
+              <NativeSelectOption v-if="!form[field]" value="" disabled>—</NativeSelectOption>
+              <NativeSelectOption v-for="option in EDITABLE_ENUM_FIELDS[field]" :key="option" :value="option">
+                {{ formatEnum(option) }}
+              </NativeSelectOption>
+            </NativeSelect>
+          </div>
+
+          <div v-for="text in inlineTextFields" :key="text.field" class="flex flex-col gap-2">
+            <Label :for="`document-${text.field}`">{{ text.label }}</Label>
+            <Input
+              :id="`document-${text.field}`"
+              v-model="form[text.field]"
+              :maxlength="MAX_LENGTHS[text.field]"
+              :aria-invalid="Boolean(errors[text.field])"
+            />
+            <p v-if="errors[text.field]" class="text-xs text-destructive">{{ errors[text.field] }}</p>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 items-start gap-4 sm:grid-cols-2">
+          <div class="flex flex-col gap-2">
+            <Label for="document-customExtension">Custom extension</Label>
+            <Input
+              id="document-customExtension"
+              v-model="form.customExtension"
+              :maxlength="MAX_LENGTHS.customExtension"
+              :aria-invalid="Boolean(errors.customExtension)"
+            />
+            <p v-if="errors.customExtension" class="text-xs text-destructive">{{ errors.customExtension }}</p>
+          </div>
+          <div class="flex h-8 items-center gap-2 self-end">
+            <Checkbox id="document-allowMcpWrite" v-model="form.allowMcpWrite" />
+            <Label for="document-allowMcpWrite" class="font-normal">MCP write allowed</Label>
+          </div>
+        </div>
+
+        <div class="flex flex-col gap-2">
+          <Label for="document-summary">Summary</Label>
+          <Textarea
+            id="document-summary"
+            v-model="form.summary"
+            class="min-h-24"
+            :maxlength="MAX_LENGTHS.summary"
+            :aria-invalid="Boolean(errors.summary)"
+          />
+          <p v-if="errors.summary" class="text-xs text-destructive">{{ errors.summary }}</p>
+        </div>
+      </template>
+
+      <template v-else>
+        <p v-if="shown.summary" class="max-w-4xl text-[0.9375rem] leading-relaxed text-foreground">{{ shown.summary }}</p>
+        <div v-else-if="loading" class="flex max-w-4xl flex-col gap-2 py-0.5">
+          <Skeleton class="h-4 w-full" />
+          <Skeleton class="h-4 w-2/3" />
+        </div>
+      </template>
 
       <dl class="grid grid-cols-[max-content_1fr] gap-x-6 gap-y-2 text-sm sm:grid-cols-[max-content_1fr_max-content_1fr]">
         <dt class="font-medium text-muted-foreground">ID</dt>
@@ -127,17 +340,31 @@ watch(() => current.value?.id, load, { immediate: true })
         <div v-for="group in relationGroups" :key="group.label" class="flex min-h-5 flex-wrap items-center gap-2">
           <span class="font-medium text-muted-foreground">{{ group.label }}:</span>
           <template v-if="group.relations?.length">
-            <Badge
+            <span
               v-for="relation in group.relations"
               :key="`${relation.type}-${relation.id}`"
-              as="button"
-              type="button"
-              variant="outline"
-              class="h-auto max-w-full cursor-pointer rounded-md text-left whitespace-normal hover:bg-muted"
-              @click="openRelation(relation)"
+              class="flex max-w-full items-center gap-1"
             >
-              {{ formatEnum(relation.type) }}: {{ relation.name || 'Untitled' }} #{{ relation.id }}
-            </Badge>
+              <Badge
+                as="button"
+                type="button"
+                variant="outline"
+                class="h-auto max-w-full cursor-pointer rounded-md text-left whitespace-normal hover:bg-muted"
+                @click="openRelation(relation)"
+              >
+                {{ formatEnum(relation.type) }}: {{ relation.name || 'Untitled' }} #{{ relation.id }}
+              </Badge>
+              <Button
+                v-if="editing"
+                variant="ghost"
+                size="icon-xs"
+                :aria-label="`Remove relation to ${relation.name || relation.id}`"
+                :disabled="removingRelation !== null"
+                @click="removeRelation(group, relation)"
+              >
+                <X />
+              </Button>
+            </span>
           </template>
           <Skeleton v-else-if="!group.relations && loading" class="h-4 w-48" />
           <span v-else class="text-muted-foreground">none</span>
@@ -153,6 +380,10 @@ watch(() => current.value?.id, load, { immediate: true })
       <div v-else-if="loading" class="flex flex-col gap-2.5">
         <Skeleton v-for="(width, index) in contentSkeletonWidths" :key="index" class="h-3.5" :class="width" />
       </div>
+      <div v-else-if="editing" class="flex flex-col gap-2">
+        <Label for="document-content">Content</Label>
+        <Textarea id="document-content" v-model="form.content" class="min-h-96 font-mono text-xs" spellcheck="false" />
+      </div>
       <DocumentContent
         v-else-if="full.content"
         :key="full.id"
@@ -162,5 +393,24 @@ watch(() => current.value?.id, load, { immediate: true })
       />
       <p v-else class="text-sm text-muted-foreground">No content.</p>
     </section>
+
+    <ConfirmDialog
+      v-model:open="confirmDelete"
+      :title="`Delete ${shown.name || 'document ' + shown.id}?`"
+      description="The document is soft-deleted and its relations are dropped. Only a person can restore it."
+      confirm-label="Delete"
+      :pending="deleting"
+      :error="actionError"
+      @confirm="remove"
+    />
+
+    <ConfirmDialog
+      :open="pendingRelation !== null"
+      title="Discard unsaved changes?"
+      description="Opening a related document drops the edits you have not saved."
+      confirm-label="Discard and open"
+      @update:open="pendingRelation = null"
+      @confirm="discardAndOpenRelation"
+    />
   </div>
 </template>
