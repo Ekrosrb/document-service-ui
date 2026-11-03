@@ -14,6 +14,7 @@ export const VALIDATION_MESSAGE = 'Request validation failed'
 export const NETWORK_ERROR_MESSAGE = 'Network Error'
 
 export const PAGEABLE = Object.freeze({ page: 1, size: 20, sort: ['name,asc', 'id,desc'] })
+export const TYPE_COUNT = 3
 export const INCLUDE_CONTENT = Object.freeze({ includeContent: true })
 
 export function buildDocumentResponse(overrides = {}) {
@@ -123,4 +124,11 @@ export function buildValidationError() {
     message: VALIDATION_MESSAGE,
     metadata: { content: 'must not be blank', kind: 'must not be null' },
   }
+}
+
+export function buildTypeCounts() {
+  return [
+    { type: DocumentType.TEXT, count: TYPE_COUNT },
+    { type: DocumentType.MARKDOWN, count: 1 },
+  ]
 }

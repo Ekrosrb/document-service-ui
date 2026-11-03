@@ -1,7 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import { DocumentKind, MemoryType } from '@/api/enums'
 import {
-  AT_LEAST_ONE_FILTER_MESSAGE,
   MEMORY_TYPE_KIND_MESSAGE,
   createSearchForm,
   toSearchRequest,
@@ -37,8 +36,8 @@ describe('validateSearchRequest', () => {
     expect(validateSearchRequest(buildFilledSearchRequest())).toEqual({})
   })
 
-  it('requires at least one filter or query', () => {
-    expect(validateSearchRequest(buildEmptyRequest())).toEqual({ form: AT_LEAST_ONE_FILTER_MESSAGE })
+  it('accepts a request with no filters at all', () => {
+    expect(validateSearchRequest(buildEmptyRequest())).toEqual({})
   })
 
   it('rejects memory type together with kind DOCUMENT', () => {

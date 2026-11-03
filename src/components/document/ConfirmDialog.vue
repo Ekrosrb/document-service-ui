@@ -26,7 +26,7 @@ const emit = defineEmits(['update:open', 'confirm'])
 
 <template>
   <Dialog :open="open" @update:open="emit('update:open', $event)">
-    <DialogContent>
+    <DialogContent :show-close-button="false">
       <DialogHeader>
         <DialogTitle>{{ title }}</DialogTitle>
         <DialogDescription v-if="description">{{ description }}</DialogDescription>

@@ -8,6 +8,7 @@ export const BLANK = '   '
 
 export const DEFAULT_INCLUDES = Object.freeze({
   includeSummary: true,
+  includeRelations: false,
   includeSuperseded: false,
 })
 

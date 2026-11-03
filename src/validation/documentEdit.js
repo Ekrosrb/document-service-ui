@@ -16,6 +16,8 @@ export const CREATE_ENUM_FIELDS = Object.freeze({
 export const REQUIRED_CREATE_FIELDS = Object.freeze(['kind', 'scope', 'author', 'summary', 'content'])
 
 export const REQUIRED_MESSAGE = 'Required.'
+export const PROJECT_KEY_REQUIRED_MESSAGE = 'Project key must be specified for scope: Project.'
+export const CUSTOM_EXTENSION_REQUIRED_MESSAGE = 'Custom extension is required for type: Custom.'
 export const tooLongMessage = (max) => `At most ${max} characters.`
 
 /** Copies the editable fields of a document into a form, with null as an empty value. */
@@ -69,18 +71,28 @@ export function toUpdateRequest(form, document = {}) {
   return request
 }
 
-/** Checks the form against the server's length limits. Returns messages keyed by field. */
-export function validateEditForm(form) {
+/**
+ * Checks the form against the server's length limits and the two fields the server makes
+ * conditional: a project key for scope PROJECT, a custom extension for type CUSTOM. The
+ * scope is not editable, so it is passed in; without it the project-key rule is skipped.
+ */
+export function validateEditForm(form, { scope } = {}) {
   const errors = {}
   for (const [field, max] of Object.entries(MAX_LENGTHS)) {
     if (normalizeText(field, form[field]).length > max) errors[field] = tooLongMessage(max)
+  }
+  if (scope === Scope.PROJECT && !normalizeText('projectKey', form.projectKey)) {
+    errors.projectKey = PROJECT_KEY_REQUIRED_MESSAGE
+  }
+  if (form.type === DocumentType.CUSTOM && !normalizeText('customExtension', form.customExtension)) {
+    errors.customExtension = CUSTOM_EXTENSION_REQUIRED_MESSAGE
   }
   return errors
 }
 
 /** Checks a draft against the length limits and the fields the server requires. */
 export function validateCreateForm(form) {
-  const errors = validateEditForm(form)
+  const errors = validateEditForm(form, { scope: form.scope })
   for (const field of REQUIRED_CREATE_FIELDS) {
     if (!String(form[field] ?? '').trim()) errors[field] = REQUIRED_MESSAGE
   }

@@ -1,7 +1,9 @@
 import { describe, expect, it } from 'vitest'
 import { Author, DocumentKind, DocumentType, MemoryType, Scope } from '@/api/enums'
 import {
+  CUSTOM_EXTENSION_REQUIRED_MESSAGE,
   MAX_LENGTHS,
+  PROJECT_KEY_REQUIRED_MESSAGE,
   REQUIRED_MESSAGE,
   createDraftForm,
   createEditForm,
@@ -141,6 +143,25 @@ describe('validateCreateForm', () => {
 
     expect(validateCreateForm(form)).toEqual({})
   })
+
+  it('requires a project key for scope PROJECT', () => {
+    const form = { ...createDraftForm(), kind: DocumentKind.MEMORY, scope: Scope.PROJECT, summary: 's', content: 'c' }
+
+    expect(validateCreateForm(form)).toEqual({ projectKey: PROJECT_KEY_REQUIRED_MESSAGE })
+  })
+
+  it('requires a custom extension for type CUSTOM', () => {
+    const form = {
+      ...createDraftForm(),
+      kind: DocumentKind.MEMORY,
+      scope: Scope.GLOBAL,
+      type: DocumentType.CUSTOM,
+      summary: 's',
+      content: 'c',
+    }
+
+    expect(validateCreateForm(form)).toEqual({ customExtension: CUSTOM_EXTENSION_REQUIRED_MESSAGE })
+  })
 })
 
 describe('validateEditForm', () => {
@@ -152,5 +173,17 @@ describe('validateEditForm', () => {
     const form = buildEditForm({ summary: 'x'.repeat(MAX_LENGTHS.summary + 1) })
 
     expect(validateEditForm(form)).toEqual({ summary: tooLongMessage(MAX_LENGTHS.summary) })
+  })
+
+  it('requires a project key once the document’s scope is PROJECT', () => {
+    const form = buildEditForm({ projectKey: BLANK })
+
+    expect(validateEditForm(form, { scope: Scope.PROJECT })).toEqual({ projectKey: PROJECT_KEY_REQUIRED_MESSAGE })
+  })
+
+  it('requires a custom extension for type CUSTOM', () => {
+    const form = buildEditForm({ type: DocumentType.CUSTOM })
+
+    expect(validateEditForm(form)).toEqual({ customExtension: CUSTOM_EXTENSION_REQUIRED_MESSAGE })
   })
 })

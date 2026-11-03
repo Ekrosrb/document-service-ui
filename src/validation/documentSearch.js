@@ -1,12 +1,16 @@
 import { DocumentKind } from '@/api/enums'
 
 export const SEARCH_FILTER_FIELDS = Object.freeze(['query', 'kind', 'scope', 'author', 'memoryType', 'projectKey', 'authorName'])
-export const SEARCH_INCLUDE_FIELDS = Object.freeze(['includeSummary', 'includeSuperseded'])
+export const SEARCH_INCLUDE_FIELDS = Object.freeze(['includeSummary', 'includeRelations', 'includeSuperseded'])
 
-export const AT_LEAST_ONE_FILTER_MESSAGE = 'Fill in at least one filter or a search query.'
 export const MEMORY_TYPE_KIND_MESSAGE = 'Memory type can only be used with kind MEMORY.'
 
-/** Returns an empty search form; summaries are included by default. */
+/**
+ * Returns an empty search form. A form with nothing filled in lists every live entry.
+ * Summaries are always included, because the result rows show them; relations only when
+ * superseded entries are included, since the "Superseded" marker is read from
+ * `referencedBy` and nothing else needs them.
+ */
 export function createSearchForm() {
   return {
     query: '',
@@ -17,6 +21,7 @@ export function createSearchForm() {
     projectKey: '',
     authorName: '',
     includeSummary: true,
+    includeRelations: false,
     includeSuperseded: false,
   }
 }
@@ -35,14 +40,11 @@ export function toSearchRequest(form) {
 }
 
 /**
- * Checks a search request against the server's rules. Returns messages keyed by field,
- * with `form` for errors that belong to the whole form; an empty object means valid.
+ * Checks a search request against the server's rules. Returns messages keyed by field;
+ * an empty object means valid.
  */
 export function validateSearchRequest(request) {
   const errors = {}
-  if (!SEARCH_FILTER_FIELDS.some((field) => request[field])) {
-    errors.form = AT_LEAST_ONE_FILTER_MESSAGE
-  }
   if (request.memoryType && request.kind === DocumentKind.DOCUMENT) {
     errors.memoryType = MEMORY_TYPE_KIND_MESSAGE
   }
