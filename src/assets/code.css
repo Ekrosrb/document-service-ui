@@ -1,0 +1,271 @@
+:root {
+    --code-comment: #8f8880;
+    --code-keyword: #b3220a;
+    --code-attr: #2d6b7a;
+    --code-string: #5c7a2e;
+    --code-number: #9a5a16;
+    --code-title: #7a4a6e;
+    --code-variable: #4b5960;
+    --code-meta: #5b6a70;
+    --code-punctuation: #6b7a80;
+    --code-addition: #4a7a2e;
+    --code-deletion: #b3220a;
+}
+
+.dark {
+    --code-comment: #6f8a80;
+    --code-keyword: #f2786b;
+    --code-attr: #31e981;
+    --code-string: #e0c689;
+    --code-number: #7fd1e8;
+    --code-title: #a8b6ff;
+    --code-variable: #9fb0b9;
+    --code-meta: #9fb0b9;
+    --code-punctuation: #8a9a94;
+    --code-addition: #31e981;
+    --code-deletion: #f2786b;
+}
+
+.hljs-comment,
+.hljs-quote {
+    color: var(--code-comment);
+    font-style: italic;
+}
+
+.hljs-keyword,
+.hljs-name,
+.hljs-tag,
+.hljs-section,
+.hljs-selector-tag,
+.hljs-bullet,
+.hljs-doctag {
+    color: var(--code-keyword);
+}
+
+.hljs-attr,
+.hljs-attribute,
+.hljs-property,
+.hljs-selector-class,
+.hljs-selector-id,
+.hljs-selector-attr,
+.hljs-selector-pseudo {
+    color: var(--code-attr);
+}
+
+.hljs-string,
+.hljs-regexp,
+.hljs-char.escape_,
+.hljs-link {
+    color: var(--code-string);
+}
+
+.hljs-number,
+.hljs-literal,
+.hljs-symbol,
+.hljs-code {
+    color: var(--code-number);
+}
+
+.hljs-title,
+.hljs-title.class_,
+.hljs-title.function_,
+.hljs-class,
+.hljs-type,
+.hljs-built_in {
+    color: var(--code-title);
+}
+
+.hljs-params,
+.hljs-variable,
+.hljs-template-variable,
+.hljs-subst {
+    color: var(--code-variable);
+}
+
+.hljs-meta,
+.hljs-meta .hljs-keyword,
+.hljs-meta .hljs-string {
+    color: var(--code-meta);
+}
+
+.hljs-punctuation,
+.hljs-operator {
+    color: var(--code-punctuation);
+}
+
+.hljs-addition {
+    color: var(--code-addition);
+}
+
+.hljs-deletion {
+    color: var(--code-deletion);
+}
+
+.hljs-emphasis {
+    font-style: italic;
+}
+
+.hljs-strong {
+    font-weight: 600;
+}
+
+.markdown-body > :first-child {
+    margin-top: 0;
+}
+
+.markdown-body > :last-child {
+    margin-bottom: 0;
+}
+
+.markdown-body h1,
+.markdown-body h2,
+.markdown-body h3,
+.markdown-body h4,
+.markdown-body h5,
+.markdown-body h6 {
+    margin: 1.6em 0 0.6em;
+    font-weight: 600;
+    line-height: 1.3;
+}
+
+.markdown-body h1 {
+    font-size: 1.75em;
+}
+
+.markdown-body h2 {
+    font-size: 1.4em;
+}
+
+.markdown-body h3 {
+    font-size: 1.2em;
+}
+
+.markdown-body h4 {
+    font-size: 1.05em;
+}
+
+.markdown-body h5,
+.markdown-body h6 {
+    font-size: 1em;
+    color: var(--muted-foreground);
+}
+
+.markdown-body p,
+.markdown-body dl {
+    margin: 0.85em 0;
+    line-height: 1.7;
+}
+
+.markdown-body ul,
+.markdown-body ol {
+    margin: 0.85em 0;
+    padding-left: 1.5em;
+    line-height: 1.7;
+}
+
+.markdown-body ul {
+    list-style: disc;
+}
+
+.markdown-body ul ul {
+    list-style: circle;
+}
+
+.markdown-body ol {
+    list-style: decimal;
+}
+
+.markdown-body li > ul,
+.markdown-body li > ol {
+    margin: 0.3em 0;
+}
+
+.markdown-body li {
+    margin: 0.3em 0;
+}
+
+.markdown-body li::marker {
+    color: var(--muted-foreground);
+}
+
+.markdown-body blockquote {
+    margin: 1em 0;
+    border-left: 3px solid var(--primary);
+    padding: 0.1em 0 0.1em 1em;
+    color: var(--muted-foreground);
+}
+
+.markdown-body code {
+    border-radius: var(--radius-sm);
+    background: color-mix(in oklch, var(--foreground) 8%, transparent);
+    padding: 0.15em 0.4em;
+    font-family: var(--font-mono, ui-monospace, monospace);
+    font-size: 0.9em;
+}
+
+.markdown-body pre {
+    margin: 1em 0;
+    overflow-x: auto;
+    border-radius: var(--radius-lg);
+    background: color-mix(in oklch, var(--foreground) 6%, transparent);
+    padding: 0.9em 1.1em;
+    line-height: 1.6;
+}
+
+.markdown-body pre code {
+    background: none;
+    padding: 0;
+    font-size: 0.95em;
+}
+
+.markdown-body a {
+    color: var(--primary);
+    text-decoration: underline;
+    text-underline-offset: 2px;
+}
+
+.markdown-body strong {
+    font-weight: 600;
+}
+
+.markdown-body em {
+    font-style: italic;
+}
+
+.markdown-body hr {
+    margin: 1.6em 0;
+    border: 0;
+    border-top: 1px solid var(--border);
+}
+
+.markdown-body img {
+    max-width: 100%;
+    border-radius: var(--radius-lg);
+}
+
+.markdown-body table {
+    display: block;
+    margin: 1em 0;
+    overflow-x: auto;
+    border-collapse: collapse;
+    width: max-content;
+    max-width: 100%;
+}
+
+.markdown-body th,
+.markdown-body td {
+    border: 1px solid var(--border);
+    padding: 0.45em 0.8em;
+    text-align: left;
+}
+
+.markdown-body th {
+    background: color-mix(in oklch, var(--foreground) 6%, transparent);
+    font-weight: 600;
+}
+
+.markdown-body input[type='checkbox'] {
+    margin-right: 0.4em;
+    vertical-align: middle;
+    accent-color: var(--primary);
+}

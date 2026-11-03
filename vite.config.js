@@ -6,12 +6,13 @@ import vueDevTools from 'vite-plugin-vue-devtools'
 import tailwindcss from '@tailwindcss/vite'
 
 // https://vite.dev/config/
-export default defineConfig({
+export default defineConfig(({ mode }) => ({
   plugins: [
     vue(),
     tailwindcss(),
 
-    vueDevTools(),
+    // Dev only, so a production build carries no devtools overlay.
+    ...(mode === 'development' ? [vueDevTools()] : []),
   ],
   resolve: {
     alias: {
@@ -19,6 +20,7 @@ export default defineConfig({
     },
   },
   server: {
+    port: 5531,
     proxy: {
       '/api/v1/': {
         target: 'http://localhost:55535',
@@ -26,4 +28,4 @@ export default defineConfig({
       }
     }
   }
-})
+}))

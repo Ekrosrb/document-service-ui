@@ -1,5 +1,6 @@
 export { ApiError } from './ApiError'
 export * from './documents'
 export * from './enums'
+export * from './metrics'
 export * from './projects'
 export * from './relations'
