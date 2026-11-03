@@ -1,6 +1,6 @@
 <script setup>
 import { ref, shallowRef, useTemplateRef } from 'vue'
-import { Moon, Sun } from '@lucide/vue'
+import { FilePlus2, Moon, Sun } from '@lucide/vue'
 import { useTheme } from '@/composables/useTheme'
 import { Button } from '@/components/ui/button'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
@@ -13,15 +13,31 @@ const { dark, toggle } = useTheme()
 const searchTab = useTemplateRef('searchTab')
 const tab = ref('projects')
 const openedDocument = shallowRef(null)
+const creating = ref(false)
 
 /** Shows the document in the Document tab and switches to it. */
 function openDocumentView(document) {
+  creating.value = false
   openedDocument.value = document
   tab.value = 'document'
 }
 
+/** Opens the Document tab as an empty draft of a new document. */
+function createDocumentView() {
+  openedDocument.value = null
+  creating.value = true
+  tab.value = 'document'
+}
+
+/** Shows the document the draft was saved as, so later saves update it. */
+function showCreatedDocument(document) {
+  creating.value = false
+  openedDocument.value = document
+}
+
 /** Leaves the Document tab once the last open document is gone. */
 function closeDocumentView() {
+  creating.value = false
   openedDocument.value = null
   tab.value = 'search'
 }
@@ -35,8 +51,12 @@ function closeDocumentView() {
         <TabsList>
           <TabsTrigger value="projects">Projects</TabsTrigger>
           <TabsTrigger value="search">Search</TabsTrigger>
-          <TabsTrigger v-if="openedDocument" value="document">Document</TabsTrigger>
+          <TabsTrigger v-if="openedDocument || creating" value="document">Document</TabsTrigger>
         </TabsList>
+        <Button variant="outline" size="sm" @click="createDocumentView">
+          <FilePlus2 />
+          New document
+        </Button>
         <Button
           variant="ghost"
           size="icon"
@@ -60,6 +80,8 @@ function closeDocumentView() {
       <TabsContent value="document">
         <DocumentTab
           :document="openedDocument"
+          :creating="creating"
+          @created="showCreatedDocument"
           @deleted="searchTab?.dropDocument($event)"
           @updated="searchTab?.applyUpdate($event)"
           @exit="closeDocumentView"

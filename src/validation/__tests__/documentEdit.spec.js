@@ -1,6 +1,16 @@
 import { describe, expect, it } from 'vitest'
-import { DocumentType, MemoryType } from '@/api/enums'
-import { MAX_LENGTHS, createEditForm, toUpdateRequest, tooLongMessage, validateEditForm } from '../documentEdit'
+import { Author, DocumentKind, DocumentType, MemoryType, Scope } from '@/api/enums'
+import {
+  MAX_LENGTHS,
+  REQUIRED_MESSAGE,
+  createDraftForm,
+  createEditForm,
+  toCreateRequest,
+  toUpdateRequest,
+  tooLongMessage,
+  validateCreateForm,
+  validateEditForm,
+} from '../documentEdit'
 import {
   BLANK,
   CUSTOM_EXTENSION,
@@ -64,6 +74,72 @@ describe('toUpdateRequest', () => {
     const document = buildEditableDocument({ type: DocumentType.TEXT })
 
     expect(toUpdateRequest(buildEditForm({ type: '' }), document)).toEqual({})
+  })
+})
+
+describe('createDraftForm', () => {
+  it('starts as a human-authored text document that MCP may write', () => {
+    expect(createDraftForm()).toMatchObject({
+      kind: '',
+      scope: '',
+      author: Author.HUMAN,
+      type: DocumentType.TEXT,
+      allowMcpWrite: true,
+      summary: '',
+      content: '',
+    })
+  })
+})
+
+describe('toCreateRequest', () => {
+  it('sends the required fields and leaves out the empty optional ones', () => {
+    const form = { ...createDraftForm(), kind: DocumentKind.DOCUMENT, scope: Scope.GLOBAL, summary: '  s  ', content: 'c' }
+
+    expect(toCreateRequest(form)).toEqual({
+      kind: DocumentKind.DOCUMENT,
+      scope: Scope.GLOBAL,
+      author: Author.HUMAN,
+      type: DocumentType.TEXT,
+      summary: 's',
+      content: 'c',
+      allowMcpWrite: true,
+    })
+  })
+
+  it('keeps the filled optional fields', () => {
+    const form = {
+      ...createDraftForm(),
+      kind: DocumentKind.MEMORY,
+      scope: Scope.PROJECT,
+      memoryType: MemoryType.FACT,
+      name: `  ${NAME}  `,
+      projectKey: 'document-service-ui',
+      summary: 's',
+      content: 'c',
+    }
+
+    expect(toCreateRequest(form)).toMatchObject({
+      memoryType: MemoryType.FACT,
+      name: NAME,
+      projectKey: 'document-service-ui',
+    })
+  })
+})
+
+describe('validateCreateForm', () => {
+  it('names every field the server requires', () => {
+    expect(validateCreateForm(createDraftForm())).toEqual({
+      kind: REQUIRED_MESSAGE,
+      scope: REQUIRED_MESSAGE,
+      summary: REQUIRED_MESSAGE,
+      content: REQUIRED_MESSAGE,
+    })
+  })
+
+  it('accepts a draft with the required fields filled in', () => {
+    const form = { ...createDraftForm(), kind: DocumentKind.MEMORY, scope: Scope.GLOBAL, summary: 's', content: 'c' }
+
+    expect(validateCreateForm(form)).toEqual({})
   })
 })
 

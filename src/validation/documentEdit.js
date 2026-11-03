@@ -1,4 +1,4 @@
-import { DocumentType, MemoryType } from '@/api/enums'
+import { Author, DocumentKind, DocumentType, MemoryType, Scope } from '@/api/enums'
 
 /** Fields a PUT /document/{id} accepts; everything else is read-only. */
 export const EDITABLE_ENUM_FIELDS = Object.freeze({ type: Object.values(DocumentType), memoryType: Object.values(MemoryType) })
@@ -7,6 +7,15 @@ export const EDITABLE_TEXT_FIELDS = Object.freeze(['name', 'authorName', 'projec
 /** Server-side maxLength of the text fields; content is unbounded. */
 export const MAX_LENGTHS = Object.freeze({ name: 250, authorName: 250, projectKey: 250, summary: 1024, customExtension: 50 })
 
+/** Fields a POST /document needs on top of the editable ones, and the ones it requires. */
+export const CREATE_ENUM_FIELDS = Object.freeze({
+  kind: Object.values(DocumentKind),
+  scope: Object.values(Scope),
+  author: Object.values(Author),
+})
+export const REQUIRED_CREATE_FIELDS = Object.freeze(['kind', 'scope', 'author', 'summary', 'content'])
+
+export const REQUIRED_MESSAGE = 'Required.'
 export const tooLongMessage = (max) => `At most ${max} characters.`
 
 /** Copies the editable fields of a document into a form, with null as an empty value. */
@@ -15,6 +24,31 @@ export function createEditForm(document = {}) {
   for (const field of Object.keys(EDITABLE_ENUM_FIELDS)) form[field] = document[field] ?? ''
   for (const field of EDITABLE_TEXT_FIELDS) form[field] = document[field] ?? ''
   return form
+}
+
+/** Returns the form of a document that does not exist yet, with the usual defaults. */
+export function createDraftForm() {
+  return { ...createEditForm(), kind: '', scope: '', author: Author.HUMAN, type: DocumentType.TEXT, allowMcpWrite: true }
+}
+
+/** Builds a DocumentCreateRequest from a draft form, leaving out the empty optional fields. */
+export function toCreateRequest(form) {
+  const request = {
+    kind: form.kind,
+    scope: form.scope,
+    author: form.author,
+    summary: normalizeText('summary', form.summary),
+    content: form.content ?? '',
+    allowMcpWrite: Boolean(form.allowMcpWrite),
+  }
+  for (const field of Object.keys(EDITABLE_ENUM_FIELDS)) {
+    if (form[field]) request[field] = form[field]
+  }
+  for (const field of ['name', 'authorName', 'projectKey', 'customExtension']) {
+    const value = normalizeText(field, form[field])
+    if (value) request[field] = value
+  }
+  return request
 }
 
 /**
@@ -40,6 +74,15 @@ export function validateEditForm(form) {
   const errors = {}
   for (const [field, max] of Object.entries(MAX_LENGTHS)) {
     if (normalizeText(field, form[field]).length > max) errors[field] = tooLongMessage(max)
+  }
+  return errors
+}
+
+/** Checks a draft against the length limits and the fields the server requires. */
+export function validateCreateForm(form) {
+  const errors = validateEditForm(form)
+  for (const field of REQUIRED_CREATE_FIELDS) {
+    if (!String(form[field] ?? '').trim()) errors[field] = REQUIRED_MESSAGE
   }
   return errors
 }
