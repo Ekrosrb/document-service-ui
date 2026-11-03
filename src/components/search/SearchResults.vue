@@ -1,6 +1,6 @@
 <script setup>
 import { computed, reactive } from 'vue'
-import { ChevronRight, PanelRightOpen } from '@lucide/vue'
+import { ChevronRight, Maximize2, PanelRightOpen } from '@lucide/vue'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
@@ -12,7 +12,7 @@ const props = defineProps({
   openId: { type: Number, default: null },
 })
 
-const emit = defineEmits(['open'])
+const emit = defineEmits(['open', 'open-view'])
 
 const enumColumns = [
   { field: 'kind', label: 'Kind' },
@@ -111,10 +111,16 @@ function toggle(id) {
                     <div class="flex items-start justify-between gap-6">
                       <p v-if="document.summary" class="max-w-4xl text-sm leading-relaxed text-foreground">{{ document.summary }}</p>
                       <p v-else class="text-sm text-muted-foreground">No summary loaded.</p>
-                      <Button variant="outline" size="sm" @click="emit('open', document)">
-                        <PanelRightOpen />
-                        Open document
-                      </Button>
+                      <div class="flex shrink-0 gap-2">
+                        <Button variant="outline" size="sm" @click="emit('open', document)">
+                          <PanelRightOpen />
+                          Open document
+                        </Button>
+                        <Button variant="outline" size="sm" @click="emit('open-view', document)">
+                          <Maximize2 />
+                          Open full view
+                        </Button>
+                      </div>
                     </div>
 
                     <dl class="grid grid-cols-[max-content_1fr] gap-x-6 gap-y-2 text-sm">

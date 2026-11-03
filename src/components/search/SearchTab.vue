@@ -8,6 +8,8 @@ import DocumentPanel from './DocumentPanel.vue'
 import SearchForm from './SearchForm.vue'
 import SearchResults from './SearchResults.vue'
 
+const emit = defineEmits(['open-view'])
+
 const root = useTemplateRef('root')
 const request = shallowRef(null)
 const projectKeys = shallowRef([])
@@ -59,6 +61,7 @@ onMounted(async () => {
           :compact="openDocument !== null"
           :open-id="openDocument?.id ?? null"
           @open="(document) => (openDocument = document)"
+          @open-view="(document) => emit('open-view', document)"
         />
 
         <p v-if="loading" class="text-center text-sm text-muted-foreground">Searching…</p>
