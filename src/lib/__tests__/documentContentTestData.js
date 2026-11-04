@@ -1,15 +1,7 @@
 export const TEXT_CONTENT = `The document panel shows a document the way its type is meant to be read.
 
-TEXT, HLD and CUSTOM documents are shown as plain monospaced text. JSON, CSS and TOON are
+TEXT and CUSTOM documents are shown as plain monospaced text. JSON, CSS and TOON are
 syntax highlighted. XML, MARKDOWN and HTML are rendered, with a toggle to the raw source.`
-
-export const HLD_CONTENT = `@card W1 done | Render every document type in the panel
-@where | document-service-ui/src/components/document/DocumentContent.vue
-Every document was shown as the same block of monospaced text, so a Markdown table and a
-TOON tabular array were equally unreadable.
-@landed | Landed — one view per document type
-@chips * highlight.js for JSON, CSS and TOON | * markdown-it for Markdown | . sandboxed iframe for HTML
-> HLD is shown as plain text for now.`
 
 export const CUSTOM_CONTENT = `= Custom document
 
@@ -25,7 +17,7 @@ export const JSON_CONTENT = `{
   "renderers": {
     "highlighted": ["JSON", "CSS", "TOON"],
     "rendered": ["XML", "MARKDOWN", "HTML"],
-    "plain": ["TEXT", "HLD", "CUSTOM"]
+    "plain": ["TEXT", "CUSTOM"]
   },
   "libraries": [
     { "name": "highlight.js", "version": 11, "bundled": true },
@@ -62,10 +54,9 @@ export const CSS_CONTENT = `/* Content styles for the document panel. */
 }`
 
 export const TOON_CONTENT = `project: document-service-ui
-types[9]{name,extension,view}:
+types[8]{name,extension,view}:
   TEXT,.txt,plain
   JSON,.json,highlighted
-  HLD,.hld,plain
   XML,.xml,rendered
   MARKDOWN,.md,rendered
   TOON,.toon,highlighted
@@ -93,7 +84,7 @@ updatedAt: 2026-10-19T18:00:00Z`
 
 export const XML_CONTENT = `<?xml version="1.0" encoding="UTF-8"?>
 <!-- Document types supported by mcp-document-service. -->
-<documentTypes count="9">
+<documentTypes count="8">
   <type name="TEXT" extension=".txt" view="plain"/>
   <type name="JSON" extension=".json" view="highlighted">
     <library>highlight.js</library>
@@ -132,7 +123,6 @@ The panel renders **Markdown**, _XML_ and HTML, and highlights \`JSON\`, \`CSS\`
 1. Rendered types get a raw toggle.
 2. Plain types are shown as monospaced text.
    - TEXT
-   - HLD
    - CUSTOM
 
 > Markdown keeps inline HTML such as <kbd>Ctrl</kbd>, but scripts and styles are stripped.

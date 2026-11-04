@@ -10,7 +10,7 @@ export const CSS_TEXT = 'body { color: red; }'
 export const FILENAME = 'service-overview.md'
 
 export const RENDERED_TYPES = Object.freeze([DocumentType.XML, DocumentType.MARKDOWN, DocumentType.HTML])
-export const PLAIN_TYPES = Object.freeze([DocumentType.TEXT, DocumentType.HLD, DocumentType.CUSTOM])
+export const PLAIN_TYPES = Object.freeze([DocumentType.TEXT, DocumentType.CUSTOM])
 
 export function buildFrameProps(overrides = {}) {
   return { content: PLAIN_TEXT, type: DocumentType.TEXT, filename: FILENAME, name: '105', ...overrides }

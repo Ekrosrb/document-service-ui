@@ -87,7 +87,7 @@ Vue 3 single-page UI for browsing, editing and deleting the documents and memori
 - `src/api/` is the only place that talks HTTP: `http.js` (axios instance), `ApiError.js`, one module per resource (`documents.js`, `relations.js`, `projects.js`, `metrics.js`), `enums.js`, barrel `index.js`. Components import from `@/api`, never axios directly.
 - `src/composables/`: `useWorkspace.js` is a module singleton holding project list, document/memory counts and trash count; `useTheme.js` the light/dark toggle.
 - `src/lib/`: display and rendering helpers (`documentView.js`, `format.js`, `markdown.js`, `highlight.js`, `xml.js`, `toonLanguage.js`). `src/validation/`: form and search validation.
-- Document content is rendered per `DocumentType`: plain text for TEXT/HLD/CUSTOM, highlight.js for JSON/CSS/TOON, rendered-with-raw-toggle for XML (tree), MARKDOWN (markdown-it + DOMPurify) and HTML (sandboxed iframe).
+- Document content is rendered per `DocumentType`: plain text for TEXT/CUSTOM, highlight.js for JSON/CSS/TOON, rendered-with-raw-toggle for XML (tree), MARKDOWN (markdown-it + DOMPurify) and HTML (sandboxed iframe).
 - Listing uses an empty search body for "everything", per-type counts come from `GET /metric/count/type`, and relations are requested only when superseded entries are included.
 
 ### 7.2 Conventions

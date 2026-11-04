@@ -5,7 +5,6 @@ import { formatEnum } from './format'
 export const TYPE_EXTENSIONS = Object.freeze({
   [DocumentType.TEXT]: '.txt',
   [DocumentType.JSON]: '.json',
-  [DocumentType.HLD]: '.hld',
   [DocumentType.XML]: '.xml',
   [DocumentType.MARKDOWN]: '.md',
   [DocumentType.TOON]: '.toon',
