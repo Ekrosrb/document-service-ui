@@ -28,7 +28,7 @@ function isCurrent(link) {
   <header class="flex flex-wrap items-center gap-6 border-b-2 border-border px-6 py-3">
     <div class="mr-auto flex items-center gap-2 font-heading text-lg font-extrabold whitespace-nowrap">
       <span class="inline-block size-3.5 bg-primary" aria-hidden="true"></span>
-      <span>HL Documents</span>
+      <span>MCP Document Service</span>
     </div>
 
     <nav class="flex items-center gap-6" aria-label="Main">

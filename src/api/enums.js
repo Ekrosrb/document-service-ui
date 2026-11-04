@@ -12,7 +12,6 @@ export const Scope = Object.freeze({
 export const DocumentType = Object.freeze({
   TEXT: 'TEXT',
   JSON: 'JSON',
-  HLD: 'HLD',
   XML: 'XML',
   MARKDOWN: 'MARKDOWN',
   TOON: 'TOON',

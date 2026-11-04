@@ -32,7 +32,7 @@ Content is rendered per the entry's type:
 
 | Type                   | How it is shown                                                 |
 |------------------------|-----------------------------------------------------------------|
-| `TEXT`, `HLD`, `CUSTOM`| Plain text, line by line.                                       |
+| `TEXT`, `CUSTOM`       | Plain text, line by line.                                       |
 | `JSON`, `CSS`, `TOON`  | Syntax highlighted (highlight.js).                              |
 | `XML`                  | A collapsible tree, with a toggle to the raw text.              |
 | `MARKDOWN`             | Rendered (markdown-it) and sanitized (DOMPurify), with a toggle to the raw text. |

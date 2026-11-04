@@ -15,7 +15,7 @@ describe('languageForType', () => {
     expect(languageForType(type)).toBe(language)
   })
 
-  it.each([DocumentType.TEXT, DocumentType.HLD, DocumentType.CUSTOM])('has no grammar for %s', (type) => {
+  it.each([DocumentType.TEXT, DocumentType.CUSTOM])('has no grammar for %s', (type) => {
     expect(languageForType(type)).toBeNull()
   })
 })
@@ -71,7 +71,7 @@ describe('the TOON grammar', () => {
   it('highlights array lengths and field lists', () => {
     const html = highlight(TOON_CONTENT, 'toon')
 
-    expect(html).toContain('<span class="hljs-number">[9]</span>')
+    expect(html).toContain('<span class="hljs-number">[8]</span>')
     expect(html).toContain('<span class="hljs-params">{name,extension,view}</span>')
   })
 
