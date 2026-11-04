@@ -1,12 +1,15 @@
 # document-service-ui
 
-A browser UI for mcp-document-service: it browses,
+A browser UI for [mcp-document-service](https://github.com/Ekrosrb/mcp-document-service): it browses,
 reads, edits and deletes the documents and memories that agents and people keep in that store. It is a
 Vue 3 single-page app that talks to the service's REST API, so anything an agent saved through MCP can be
 read and corrected by a person.
 
 There is no build step at runtime and no server-side logic: the deployment is static files served by nginx,
 which also proxies `/api/v1` to mcp-document-service, so the browser only ever talks to one origin.
+
+The service itself is not part of this repository; it lives in
+[mcp-document-service](https://github.com/Ekrosrb/mcp-document-service) and is deployed from there.
 
 ## What it shows
 
@@ -224,3 +227,28 @@ docker compose -f deploy/docker-compose.yaml up -d --build
 | `deploy/`            | `docker-compose.yaml`, the nginx config template, `.env.example`.                  |
 
 Tests sit in a `__tests__` folder next to the code they cover, with a `*TestData.js` holding the fixtures.
+
+## Built with
+
+| Project | Used for |
+|---------|----------|
+| [Vue](https://github.com/vuejs/core) | The app: single-file components, Composition API |
+| [Vite](https://github.com/vitejs/vite) | Build and dev server with the API proxy |
+| [Tailwind CSS](https://github.com/tailwindlabs/tailwindcss) | Styling, as CSS variables (no config file) |
+| [shadcn-vue](https://github.com/unovue/shadcn-vue) | CLI that generates the primitives in `src/components/ui/` |
+| [Reka UI](https://github.com/unovue/reka-ui) | Unstyled component primitives behind shadcn-vue |
+| [class-variance-authority](https://github.com/joe-bell/cva), [cn](https://github.com/shadcn-ui/cn) | Component variants and class merging |
+| [tw-animate-css](https://github.com/Wombosvideo/tw-animate-css) | Animations for the primitives |
+| [Lucide](https://github.com/lucide-icons/lucide) | Icons |
+| [VueUse](https://github.com/vueuse/vueuse) | Composition utilities |
+| [axios](https://github.com/axios/axios) | REST client in `src/api/` |
+| [markdown-it](https://github.com/markdown-it/markdown-it), [DOMPurify](https://github.com/cure53/DOMPurify) | Rendering and sanitizing `MARKDOWN` content |
+| [highlight.js](https://github.com/highlightjs/highlight.js) | Syntax highlighting for `JSON`, `CSS` and `TOON` content |
+| [Vitest](https://github.com/vitest-dev/vitest), [Vue Test Utils](https://github.com/vuejs/test-utils), [jsdom](https://github.com/jsdom/jsdom), [axios-mock-adapter](https://github.com/ctimmerm/axios-mock-adapter) | Unit tests |
+| [Vue DevTools](https://github.com/vuejs/devtools) | Dev server only; left out of `npm run build` |
+| [Node.js](https://github.com/nodejs/node) | Build, and the `node:26-alpine` build stage |
+| [nginx](https://github.com/nginx/nginx) | Serves `dist/` and proxies `/api/v1` (`nginx:1.31-alpine`) |
+| [Docker](https://github.com/docker) | Image build and deployment |
+| [GitHub Actions](https://github.com/features/actions) | PR tests and releases |
+
+Dependency versions are kept in `package.json`.
